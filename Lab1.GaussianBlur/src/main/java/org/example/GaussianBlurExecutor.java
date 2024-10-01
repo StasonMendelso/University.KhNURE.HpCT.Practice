@@ -51,8 +51,20 @@ public class GaussianBlurExecutor {
 
                 for (int ky = 0; ky < kernelSize; ky++) {
                     for (int kx = 0; kx < kernelSize; kx++) {
-                        int pixelX = Math.max(0, Math.min(matrix[0].length - 1, x - kernelHalf + kx));
-                        int pixelY = Math.max(0, Math.min(matrix.length - 1, y - kernelHalf + ky));
+                        int pixelX = x - kernelHalf + kx;
+                        int pixelY = y - kernelHalf + ky;
+
+                        if (pixelX < 0) {
+                            pixelX = -pixelX;
+                        } else if (pixelX >= matrix[0].length) {
+                            pixelX = 2 * matrix[0].length - pixelX - 1;
+                        }
+
+                        if (pixelY < 0) {
+                            pixelY = -pixelY;
+                        } else if (pixelY >= matrix.length) {
+                            pixelY = 2 * matrix.length - pixelY - 1;
+                        }
 
                         int rgb = matrix[pixelY][pixelX];
 

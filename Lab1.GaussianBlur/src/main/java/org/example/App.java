@@ -24,8 +24,8 @@ public class App {
         int processors = Runtime.getRuntime().availableProcessors();
         System.out.println("Number of available processors = " + processors);
         System.out.println("Make a pre-warming of the JVM");
-        String inputFilePath = "large-image";
-        String outputDirectoryPath = "large-image_results";
+        String inputFilePath = "enot";
+        String outputDirectoryPath = "enot_results";
         applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 1);
         applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 1);
         applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 1);
