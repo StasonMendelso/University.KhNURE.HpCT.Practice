@@ -2,6 +2,7 @@ package org.example;
 
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 /**
  * @author Stanislav Hlova
@@ -34,29 +35,24 @@ public class GaussianBlurExecutor {
         return (1 / (2 * Math.PI * Math.pow(sigma, 2))) * Math.exp(-((x * x + y * y) / (2 * Math.pow(sigma, 2))));
     }
 
-    public static int[][] blur(int[][] matrix, double[][] kernel, Point point1, Point point2) {
+    public static void blur(int[][] matrix, double[][] kernel, Point point1, Point point2, BufferedImage resultImage, int startYPosition) {
         if (point2.getY() < point1.getY()) {
             throw new IllegalArgumentException("Point2.Y can't be less than Point1.Y");
         }
         if (point2.getX() < point1.getX()) {
             throw new IllegalArgumentException("Point2.Y can't be less than Point1.Y");
         }
-        int resultWidth = point2.getX() - point1.getX() + 1;
-        int resultHeight = point2.getY() - point1.getY() + 1;
-        int[][] resultMatrix = new int[resultHeight][resultWidth];
-
         int kernelSize = kernel.length;
         int kernelHalf = kernelSize / 2;
 
-        for (int y = point1.getY(), resultY = 0; y <= point2.getY(); y++, resultY++) {
-            for (int x = point1.getX(), resultX = 0; x <= point2.getX(); x++, resultX++) {
+        for (int y = point1.getY(); y <= point2.getY(); y++, startYPosition++) {
+            for (int x = point1.getX(); x <= point2.getX(); x++) {
                 double sumR = 0, sumG = 0, sumB = 0;
 
                 for (int ky = 0; ky < kernelSize; ky++) {
                     for (int kx = 0; kx < kernelSize; kx++) {
                         int pixelX = Math.max(0, Math.min(matrix[0].length - 1, x - kernelHalf + kx));
                         int pixelY = Math.max(0, Math.min(matrix.length - 1, y - kernelHalf + ky));
-
 
                         int rgb = matrix[pixelY][pixelX];
 
@@ -73,9 +69,8 @@ public class GaussianBlurExecutor {
                 int newBlue = Math.min(Math.max((int) sumB, 0), 255);
 
                 Color color = new Color(newRed, newGreen, newBlue);
-                resultMatrix[resultY][resultX] = color.getRGB();
+                resultImage.setRGB(x,startYPosition, color.getRGB());
             }
         }
-        return resultMatrix;
     }
 }

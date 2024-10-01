@@ -42,3 +42,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+/Lab1.GaussianBlur/src/main/resources/butterfly_results/
+/Lab1.GaussianBlur/src/main/resources/enot_results/
+/Lab1.GaussianBlur/src/main/resources/large-image_results/
