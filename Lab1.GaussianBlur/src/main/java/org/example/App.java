@@ -10,15 +10,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
 
 
 public class App {
     public static final int KERNEL_SIZE = 23;
     public static final int SIGMA = 10;
+    public static final List<CalculationResults> CALCULATION_RESULTS = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
         int processors = Runtime.getRuntime().availableProcessors();
@@ -32,24 +37,49 @@ public class App {
         applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 1);
         System.out.println("Finished a pre-warming of the JVM!");
         System.out.println("Start real computing!");
-        applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 1);
-        applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 2);
-        applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 4);
-        applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 6);
-        applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 8);
-        applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 10);
-        applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 11);
-        applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 12);
-        applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 13);
-        applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 14);
-        applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 16);
-        applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 18);
-        applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 20);
-        applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 25);
-        applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 30);
-        applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 100);
-        applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 200);
-        applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 300);
+        CALCULATION_RESULTS.clear();
+        int numberOfResearches = 10;
+        for (int i = 1; i <= numberOfResearches; i++) {
+            System.out.println("========================================EXPERIMENT №"+i+"========================================");
+            applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 1);
+            applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 2);
+            applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 4);
+            applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 6);
+            applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 8);
+            applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 10);
+            applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 12);
+            applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 14);
+            applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 16);
+            applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 18);
+            applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 20);
+            applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 22);
+            applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 24);
+            applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 26);
+            applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 30);
+            applyGaussianFilterToImage(inputFilePath, outputDirectoryPath, 40);
+        }
+        System.out.println("=================================================RESULTS======================================================");
+        printCalculationResults();
+    }
+
+    private static void printCalculationResults() {
+        Map<Integer, List<CalculationResults>> map = CALCULATION_RESULTS.stream()
+                .collect(groupingBy(CalculationResults::getNumberOfThreads));
+
+        StringBuilder tableHeader = new StringBuilder();
+        tableHeader.append("|  p   |");
+        map.keySet().stream().sorted().forEach(key -> tableHeader.append(String.format(" %10d |", key)));
+
+        StringBuilder tableBody = new StringBuilder();
+        tableBody.append("| t,мс |");
+        map.keySet().stream().sorted().forEach(key -> {
+            double avgTime = map.get(key).stream()
+                    .collect(Collectors.averagingLong(CalculationResults::getTimeOfComputing));
+            tableBody.append(String.format(" %10.1f |", avgTime));
+        });
+
+        System.out.println(tableHeader);
+        System.out.println(tableBody);
     }
 
     private static void applyGaussianFilterToImage(String inputFilePath, String outputDirectoryPath, int numberOfThreads) throws IOException {
@@ -106,7 +136,9 @@ public class App {
         }
         waitAllSubmittedTasks(submittedTasks);
         long endTime = System.currentTimeMillis();
-        System.out.printf("Розмір зображення %dx%d. Кількість потоків = %d. Час виконання = %d млс%n", width, height, numberOfThreads, (endTime - startTime));
+        long timeOfComputing = endTime - startTime;
+        System.out.printf("Розмір зображення %dx%d. Кількість потоків = %d. Час виконання = %d млс%n", width, height, numberOfThreads, timeOfComputing);
+        CALCULATION_RESULTS.add(new CalculationResults(width, height, numberOfThreads, timeOfComputing));
         executorService.shutdown();
         return resultImage;
     }
