@@ -16,7 +16,7 @@ public class App {
         measuringOperationTimes();
 
         double c = 1.79, m = 61.8265;
-        int[] array = {9, 2, 5, 1, 8, 4};
+        int[] array = {6, 5, 4, 10, 9, 8, 7, 3, 2, 1};;
 
         long startTime = System.nanoTime(); // Початок заміру часу
         bubbleSort(array);

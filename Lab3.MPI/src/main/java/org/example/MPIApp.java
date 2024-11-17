@@ -15,11 +15,14 @@ import java.util.Arrays;
  * @author Stanislav Hlova
  */
 public class MPIApp {
-    private static final boolean DEBUG_DISABLED = false;
+    private static final boolean DEBUG_DISABLED = true;
+    public static final String PATH_TO_DEBUG_FOLDER = "D:\\ХНУРЕ\\7 семестр\\ТВО\\University.KhNURE.HpCT.Practice\\Lab3.MPI\\debug\\";
 
     public static void main(String[] args) {
-        int[] initialArray = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        //  int[] initialArray = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        int[] initialArray = {6, 5, 4, 10, 9, 8, 7, 3, 2, 1};
         int[] finalArray = null;
+        long startTime = System.nanoTime();
         MPI.Init(args);
         int rank = MPI.COMM_WORLD.Rank(); // Ранг процесса
         int size = MPI.COMM_WORLD.Size(); // Общее количество процессов
@@ -36,6 +39,7 @@ public class MPIApp {
 
         debug(rank, "=== Процеc відправки даних ===");
         if (isRoot(rank, size)) {
+            System.out.println("Початковий масив: " + Arrays.toString(initialArray));
             int numberOfSends = size / 2;
             //Розсилка ліворуч
             int k = 0;
@@ -57,7 +61,6 @@ public class MPIApp {
         }
 
         ShiftParms shiftParms = null;
-        // На розсилку даних не з рутового
 
         if (rank < size / 2) {
             //Розсилка ліворуч
@@ -96,10 +99,67 @@ public class MPIApp {
         }
         debug(rank, "Процес " + rank + " в решті решт отримав масив " + Arrays.toString(mySubProcessArray));
         debug(rank, "=== Процес сортування ===");
+        Arrays.sort(mySubProcessArray);
+        int[] receivedSubProcessArray = new int[sizeOfSubArray];
+        for (int i = 1; i <= size; i++) {
+            if (i % 2 == 1) {
+                debug(rank, "== Непарна ітерацій №" + i + " ==");
+                if (rank % 2 == 0) {
+                    if (rank != size - 1) {
+                        int neighbourRank = rank + 1;
+                        debug(rank, "Відправляємо праворуч на непарного сусіда " + neighbourRank + " свій масив " + Arrays.toString(mySubProcessArray));
+                        lineComm.Send(mySubProcessArray, 0, sizeOfSubArray, MPI.INT, neighbourRank, 0);
+                        debug(rank, "Отримуємо з правого непарного сусіда " + neighbourRank + " його масив ");
+                        lineComm.Recv(receivedSubProcessArray, 0, sizeOfSubArray, MPI.INT, neighbourRank, 0);
+                        debug(rank, "Отримали з правого непарного сусіда " + neighbourRank + " його масив " + Arrays.toString(receivedSubProcessArray));
+                        debug(rank, "Сортуємо масиви методом злиття та залишаючи собі менші значення. Мій масив " + Arrays.toString(mySubProcessArray) + ", масив сусіда " + Arrays.toString(receivedSubProcessArray));
+                        mySubProcessArray = mergeLower(mySubProcessArray, receivedSubProcessArray, sizeOfSubArray);
+                        debug(rank, "Залишаємо менші значення собі: " + Arrays.toString(mySubProcessArray));
+                    }
+                } else {
+                    int neighbourRank = rank - 1;
+                    debug(rank, "Отримуємо з лівого парного сусіда " + neighbourRank + " його масив ");
+                    lineComm.Recv(receivedSubProcessArray, 0, sizeOfSubArray, MPI.INT, neighbourRank, 0);
+                    debug(rank, "Отримали з лівого парного сусіда " + neighbourRank + " його масив " + Arrays.toString(receivedSubProcessArray));
+                    debug(rank, "Відправляємо ліворуч на парного сусіда " + neighbourRank + " свій масив " + Arrays.toString(mySubProcessArray));
+                    lineComm.Send(mySubProcessArray, 0, sizeOfSubArray, MPI.INT, neighbourRank, 0);
 
+                    debug(rank, "Сортуємо масиви методом злиття та залишаючи собі більші значення. Мій масив " + Arrays.toString(mySubProcessArray) + ", масив сусіда " + Arrays.toString(receivedSubProcessArray));
+                    mySubProcessArray = mergeHigher(mySubProcessArray, receivedSubProcessArray, sizeOfSubArray);
+                    debug(rank, "Залишаємо більші значення собі: " + Arrays.toString(mySubProcessArray));
+                }
+            } else {
+                debug(rank, "== Парна ітерацій №" + i + " ==");
+                if (rank % 2 != 0) {
+                    int neighbourRank = rank + 1;
+                    debug(rank, "Відправляємо праворуч на парного сусіда " + neighbourRank + " свій масив " + Arrays.toString(mySubProcessArray));
+                    lineComm.Send(mySubProcessArray, 0, sizeOfSubArray, MPI.INT, neighbourRank, 0);
+                    debug(rank, "Отримуємо з правого парного сусіда " + neighbourRank + " його масив ");
+                    lineComm.Recv(receivedSubProcessArray, 0, sizeOfSubArray, MPI.INT, neighbourRank, 0);
+                    debug(rank, "Отримали з правого парного сусіда " + neighbourRank + " його масив " + Arrays.toString(receivedSubProcessArray));
+                    debug(rank, "Сортуємо масиви методом злиття та залишаючи собі менші значення. Мій масив " + Arrays.toString(mySubProcessArray) + ", масив сусіда " + Arrays.toString(receivedSubProcessArray));
+                    mySubProcessArray = mergeLower(mySubProcessArray, receivedSubProcessArray, sizeOfSubArray);
+                    debug(rank, "Залишаємо менші значення собі: " + Arrays.toString(mySubProcessArray));
+                } else {
+                    if (rank != 0) {
+                        int neighbourRank = rank - 1;
+                        debug(rank, "Отримуємо з лівого непарного сусіда " + neighbourRank + " його масив ");
+                        lineComm.Recv(receivedSubProcessArray, 0, sizeOfSubArray, MPI.INT, neighbourRank, 0);
+                        debug(rank, "Отримали з лівого парного сусіда " + neighbourRank + " його масив " + Arrays.toString(receivedSubProcessArray));
+                        debug(rank, "Відправляємо ліворуч на непарного сусіда " + neighbourRank + " свій масив " + Arrays.toString(mySubProcessArray));
+                        lineComm.Send(mySubProcessArray, 0, sizeOfSubArray, MPI.INT, neighbourRank, 0);
+
+                        debug(rank, "Сортуємо масиви методом злиття та залишаючи собі більші значення. Мій масив " + Arrays.toString(mySubProcessArray) + ", масив сусіда " + Arrays.toString(receivedSubProcessArray));
+                        mySubProcessArray = mergeHigher(mySubProcessArray, receivedSubProcessArray, sizeOfSubArray);
+                        debug(rank, "Залишаємо більші значення собі: " + Arrays.toString(mySubProcessArray));
+                    }
+
+                }
+            }
+        }
+        debug(rank, "Процес " + rank + " має наступну відсортовану частину: " + Arrays.toString(mySubProcessArray));
         debug(rank, "===Збір даних====");
 
-        lineComm.Barrier();
         if (isRoot(rank, size)) {
             finalArray = new int[initialArray.length];
             int index = 0;
@@ -181,17 +241,78 @@ public class MPIApp {
             }
         }
         if (isRoot(rank, size)) {
+            long endTime = System.nanoTime();
             System.out.println("Після отримання всіх повідомлень маємо наступний результат:");
             System.out.println(Arrays.toString(finalArray));
             debug(rank, "Після отримання всіх повідомлень маємо наступний результат:");
             debug(rank, Arrays.toString(finalArray));
+            System.out.println("Час сортування за допомогою MPI дорівнює " + (endTime - startTime) + "нс");
         }
         MPI.Finalize();
+
+    }
+
+    private static int[] mergeLower(int[] left, int[] right, int sizeOfSubArray) {
+        int[] result = new int[sizeOfSubArray];
+        int i = 0, j = 0, k = 0;
+        while (i < left.length && j < right.length) {
+            if (left[i] <= right[j]) {
+                result[k++] = left[i++];
+            } else {
+                result[k++] = right[j++];
+            }
+            if (k == result.length) {
+                return result;
+            }
+        }
+        while (i < left.length) {
+            result[k++] = left[i++];
+            if (k == result.length) {
+                return result;
+            }
+        }
+
+        while (j < right.length) {
+            result[k++] = right[j++];
+            if (k == result.length) {
+                return result;
+            }
+        }
+        return result;
+    }
+
+    private static int[] mergeHigher(int[] left, int[] right, int sizeOfSubArray) {
+        int[] result = new int[sizeOfSubArray];
+        int i = left.length - 1, j = right.length - 1, k = sizeOfSubArray - 1;
+        while (i > -1 && j > -1) {
+            if (left[i] >= right[j]) {
+                result[k--] = left[i--];
+            } else {
+                result[k--] = right[j--];
+            }
+            if (k == -1) {
+                return result;
+            }
+        }
+        while (i > -1) {
+            result[k--] = left[i--];
+            if (k == -1) {
+                return result;
+            }
+        }
+
+        while (j > -1) {
+            result[k--] = right[j--];
+            if (k == -1) {
+                return result;
+            }
+        }
+        return result;
     }
 
     private static void clearLogFile(int rank) {
         try {
-            Path path = Path.of("D:\\ХНУРЕ\\7 семестр\\ТВО\\University.KhNURE.HpCT.Practice\\Lab3.MPI\\debug\\" + "rank" + rank + ".txt");
+            Path path = Path.of(PATH_TO_DEBUG_FOLDER + "rank" + rank + ".txt");
             Files.deleteIfExists(path);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -207,8 +328,8 @@ public class MPIApp {
             return;
         }
         try {
-            Path path = Path.of("D:\\ХНУРЕ\\7 семестр\\ТВО\\University.KhNURE.HpCT.Practice\\Lab3.MPI\\debug\\" + "rank" + rank + ".txt");
-            String message = "[" + LocalDateTime.now() + "] - " + msg + System.lineSeparator();
+            Path path = Path.of(PATH_TO_DEBUG_FOLDER + "rank" + rank + ".txt");
+            String message = String.format("[%-29s] - %s%n", LocalDateTime.now(), msg);
             if (Files.exists(path)) {
                 Files.writeString(path, message, StandardOpenOption.APPEND);
             } else {
@@ -218,29 +339,5 @@ public class MPIApp {
             throw new RuntimeException(e);
         }
 
-    }
-
-    // Слияние двух массивов
-    private static int[] merge(int[] left, int[] right) {
-        int[] result = new int[left.length + right.length];
-        int i = 0, j = 0, k = 0;
-
-        while (i < left.length && j < right.length) {
-            if (left[i] <= right[j]) {
-                result[k++] = left[i++];
-            } else {
-                result[k++] = right[j++];
-            }
-        }
-
-        while (i < left.length) {
-            result[k++] = left[i++];
-        }
-
-        while (j < right.length) {
-            result[k++] = right[j++];
-        }
-
-        return result;
     }
 }
