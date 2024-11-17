@@ -6,17 +6,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.example.ArrayGeneratorUtil.generateRandomArray;
+
 /**
  * Hello world!
  */
 public class App {
     public static void main(String[] args) {
 
-        prewarmingJVM();
-        measuringOperationTimes();
-
-        double c = 1.79, m = 61.8265;
-        int[] array = {6, 5, 4, 10, 9, 8, 7, 3, 2, 1};;
+//        prewarmingJVM();
+//        measuringOperationTimes();
+//
+//        double c = 1.79, m = 61.8265;
+        int[] array = generateRandomArray(100000, 0,100000);
 
         long startTime = System.nanoTime(); // Початок заміру часу
         bubbleSort(array);
@@ -27,7 +29,7 @@ public class App {
             System.out.print(num + " ");
         }
         System.out.println("\nЧас виконання: " + (endTime - startTime) + " наносекунд");
-        System.out.println("Теоретичний час виконання: " + calculateTheorOrderedBubleSort(array.length, c, m) + " наносекунд");
+      //  System.out.println("Теоретичний час виконання: " + calculateTheorOrderedBubleSort(array.length, c, m) + " наносекунд");
 
 
     }

@@ -11,16 +11,18 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
+import static org.example.ArrayGeneratorUtil.generateRandomArray;
+
 /**
  * @author Stanislav Hlova
  */
 public class MPIApp {
-    private static final boolean DEBUG_DISABLED = true;
+    private static final boolean DEBUG_DISABLED = false;
     public static final String PATH_TO_DEBUG_FOLDER = "D:\\ХНУРЕ\\7 семестр\\ТВО\\University.KhNURE.HpCT.Practice\\Lab3.MPI\\debug\\";
 
     public static void main(String[] args) {
         //  int[] initialArray = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-        int[] initialArray = {6, 5, 4, 10, 9, 8, 7, 3, 2, 1};
+        int[] initialArray = generateRandomArray(100_005,1,100_001);
         int[] finalArray = null;
         long startTime = System.nanoTime();
         MPI.Init(args);
@@ -30,6 +32,12 @@ public class MPIApp {
         int[] mySubProcessArray = new int[sizeOfSubArray];
         if (!DEBUG_DISABLED) {
             clearLogFile(rank);
+        }
+        if (size * sizeOfSubArray != initialArray.length) {
+            throw new RuntimeException("Кількість елементів в масиві повинна націло ділитися на кількість процесів без остачі!");
+        }
+        if (size % 2 == 0 || size == 1){
+            throw new RuntimeException("Кількість процесів повинна бути непарною та більше за 1!");
         }
 
         //Створення топології лінійки
@@ -215,6 +223,7 @@ public class MPIApp {
                     debug(rank, "Відправка даних процесом " + rank + " ліворуч на РУТ на " + shiftParms.rank_dest + " повідомлення " + Arrays.toString(bufArray) + " з тегом " + k);
                     lineComm.Send(bufArray, 0, sizeOfSubArray, MPI.INT, shiftParms.rank_dest, k);
                     sendCountLeft--;
+                    k++;
                 }
             }
         } else if (rank > size / 2) {
@@ -237,6 +246,7 @@ public class MPIApp {
                     debug(rank, "Відправка даних процесом " + rank + " праворуч на РУТ на " + shiftParms.rank_dest + " з тегом " + k);
                     lineComm.Send(bufArray, 0, sizeOfSubArray, MPI.INT, shiftParms.rank_dest, k);
                     sendCountLeft--;
+                    k--;
                 }
             }
         }
