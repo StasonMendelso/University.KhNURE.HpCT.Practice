@@ -11,6 +11,8 @@
   <url>https://maven.apache.org</url>
     <modules>
         <module>Lab1.GaussianBlur</module>
+        <module>Lab2. GaussMethodCalc</module>
+        <module>Lab3.MPI</module>
     </modules>
 
     <properties>
