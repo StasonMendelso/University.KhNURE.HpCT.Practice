@@ -17,12 +17,15 @@ import static org.example.ArrayGeneratorUtil.generateRandomArray;
  * @author Stanislav Hlova
  */
 public class MPIApp {
-    private static final boolean DEBUG_DISABLED = false;
+    private static final boolean DEBUG_DISABLED = true;
     public static final String PATH_TO_DEBUG_FOLDER = "D:\\ХНУРЕ\\7 семестр\\ТВО\\University.KhNURE.HpCT.Practice\\Lab3.MPI\\debug\\";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         //  int[] initialArray = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-        int[] initialArray = generateRandomArray(100_005,1,100_001);
+        int[] initialArray = Arrays.stream(Files.readString(Path.of("D:\\ХНУРЕ\\7 семестр\\ТВО\\University.KhNURE.HpCT.Practice\\Lab3.MPI\\src\\main\\resources\\array.txt"))
+                        .split(","))
+                        .mapToInt(Integer::parseInt)
+                        .toArray();
         int[] finalArray = null;
         long startTime = System.nanoTime();
         MPI.Init(args);

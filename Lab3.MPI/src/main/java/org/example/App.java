@@ -1,7 +1,10 @@
 package org.example;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,23 +15,30 @@ import static org.example.ArrayGeneratorUtil.generateRandomArray;
  * Hello world!
  */
 public class App {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-//        prewarmingJVM();
+        prewarmingJVM();
 //        measuringOperationTimes();
 //
 //        double c = 1.79, m = 61.8265;
-        int[] array = generateRandomArray(100000, 0,100000);
+        int[] array = Arrays.stream(Files.readString(Path.of("Lab3.MPI/src/main/resources/array.txt"))
+                .split(","))
+                .mapToInt(Integer::parseInt)
+                .toArray();
 
-        long startTime = System.nanoTime(); // Початок заміру часу
-        bubbleSort(array);
-        long endTime = System.nanoTime();   // Кінець заміру часу
+        for (int i=1;i<=20;i++) {
+            int[] copy = Arrays.copyOf(array, array.length);
+            long startTime = System.nanoTime(); // Початок заміру часу
+            bubbleSort(copy);
+            long endTime = System.nanoTime();   // Кінець заміру часу
 
-        System.out.println("Відсортований масив:");
-        for (int num : array) {
-            System.out.print(num + " ");
+//        System.out.println("Відсортований масив:");
+//        for (int num : array) {
+//            System.out.print(num + " ");
+//        }
+            System.out.println("Час виконання: " + (endTime - startTime) + " наносекунд");
+
         }
-        System.out.println("\nЧас виконання: " + (endTime - startTime) + " наносекунд");
       //  System.out.println("Теоретичний час виконання: " + calculateTheorOrderedBubleSort(array.length, c, m) + " наносекунд");
 
 
@@ -107,31 +117,6 @@ public class App {
             System.out.println("Result of operation = " + sum + ". Operation of prewarming takes: " + (endTime - startTime) + "ns");
         }
         System.out.println("==== JVM was prewarmed ====");
-    }
-
-    // Вычисление количества элементов для каждого процесса
-    private static int[] calculateCounts(int totalElements, int size) {
-        int[] counts = new int[size];
-        int quotient = totalElements / size;
-        int remainder = totalElements % size;
-
-        for (int i = 0; i < size; i++) {
-            counts[i] = quotient + (i < remainder ? 1 : 0);
-        }
-
-        return counts;
-    }
-
-    // Вычисление смещений для каждого процесса
-    private static int[] calculateDispls(int totalElements, int size) {
-        int[] displs = new int[size];
-        int[] counts = calculateCounts(totalElements, size);
-
-        for (int i = 1; i < size; i++) {
-            displs[i] = displs[i - 1] + counts[i - 1];
-        }
-
-        return displs;
     }
 
 
