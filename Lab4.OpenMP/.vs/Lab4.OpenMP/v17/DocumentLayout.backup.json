@@ -1,0 +1,57 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\\u0425\u041D\u0423\u0420\u0415\\7 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u0422\u0412\u041E\\University.KhNURE.HpCT.Practice\\Lab4.OpenMP\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{E771947A-09D2-4842-A5A2-617009966EEE}|Lab4.OpenMP.vcxproj|D:\\\u0425\u041D\u0423\u0420\u0415\\7 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u0422\u0412\u041E\\University.KhNURE.HpCT.Practice\\Lab4.OpenMP\\Lab4.OpenMP.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{E771947A-09D2-4842-A5A2-617009966EEE}|Lab4.OpenMP.vcxproj|solutionrelative:Lab4.OpenMP.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\VS\\VC\\Tools\\MSVC\\14.41.34120\\crt\\src\\vcruntime\\delete_scalar.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "delete_scalar.cpp",
+              "DocumentMoniker": "D:\\VS\\VC\\Tools\\MSVC\\14.41.34120\\crt\\src\\vcruntime\\delete_scalar.cpp",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\VS\\VC\\Tools\\MSVC\\14.41.34120\\crt\\src\\vcruntime\\delete_scalar.cpp",
+              "ToolTip": "D:\\VS\\VC\\Tools\\MSVC\\14.41.34120\\crt\\src\\vcruntime\\delete_scalar.cpp",
+              "RelativeToolTip": "..\\..\\..\\..\\..\\VS\\VC\\Tools\\MSVC\\14.41.34120\\crt\\src\\vcruntime\\delete_scalar.cpp",
+              "ViewState": "AgIAABQAAAAAAAAAAAAEwCEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-11-24T10:11:15.725Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Lab4.OpenMP.cpp",
+              "DocumentMoniker": "D:\\\u0425\u041D\u0423\u0420\u0415\\7 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u0422\u0412\u041E\\University.KhNURE.HpCT.Practice\\Lab4.OpenMP\\Lab4.OpenMP.cpp",
+              "RelativeDocumentMoniker": "Lab4.OpenMP.cpp",
+              "ToolTip": "D:\\\u0425\u041D\u0423\u0420\u0415\\7 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u0422\u0412\u041E\\University.KhNURE.HpCT.Practice\\Lab4.OpenMP\\Lab4.OpenMP.cpp",
+              "RelativeToolTip": "Lab4.OpenMP.cpp",
+              "ViewState": "AgIAAHQAAAAAAAAAAAAAAH0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-11-23T18:54:22.098Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
